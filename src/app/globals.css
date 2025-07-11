@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import "tailwindcss";
 
 :root {
@@ -23,4 +24,47 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Sidebar joining effect styles */
+.sidebar-melt-active {
+  position: relative;
+  z-index: 2;
+}
+.sidebar-melt-active .sidebar-melt-shape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 140%;
+  height: 100%;
+  background: #fff;
+  border-top-right-radius: 2.5rem;
+  border-bottom-right-radius: 2.5rem;
+  border-top-left-radius: 1.2rem;
+  border-bottom-left-radius: 1.2rem;
+  box-shadow: 0 4px 24px 0 rgba(14,165,233,0.10);
+  opacity: 1;
+  transition: opacity 0.3s, background 0.3s;
+  content: '';
+  z-index: 1;
+}
+.sidebar-melt-hover .sidebar-melt-shape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 140%;
+  height: 100%;
+  background: #e0f2fe;
+  border-top-right-radius: 2.5rem;
+  border-bottom-right-radius: 2.5rem;
+  border-top-left-radius: 1.2rem;
+  border-bottom-left-radius: 1.2rem;
+  box-shadow: 0 2px 12px 0 rgba(14,165,233,0.08);
+  opacity: 0;
+  transition: opacity 0.3s, background 0.3s;
+  content: '';
+  z-index: 1;
+}
+.sidebar-melt-hover:hover .sidebar-melt-shape {
+  opacity: 1;
 }
