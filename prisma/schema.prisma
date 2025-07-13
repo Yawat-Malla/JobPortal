@@ -1,0 +1,248 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profiles
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  middleName    String?
+  lastName      String
+  username      String    @unique
+  avatar        String?
+  phone         String?
+  address       String?
+  city          String?
+  country       String?
+  aboutMe       String?
+  isAvailableForHire Boolean @default(false)
+  role          UserRole  @default(JOBSEEKER)
+  companyId     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  skills        UserSkill[]
+  applications  Application[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  jobPostings   Job[]       @relation("JobPoster")
+  company       Company?    @relation("CompanyEmployee", fields: [companyId], references: [id])
+  statistics    UserStatistics?
+  profileViews  ProfileView[]
+
+  @@map("users")
+}
+
+// Company model for employers
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  logo        String?
+  website     String?
+  industry    String?
+  size        CompanySize?
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  employees   User[]   @relation("CompanyEmployee")
+  jobs        Job[]
+  applications Application[]
+
+  @@map("companies")
+}
+
+// Job model for job postings
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  requirements String?
+  salary      String?
+  salaryMin   Int?
+  salaryMax   Int?
+  location    String?
+  jobType     JobType
+  isRemote    Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  postedAt    DateTime @default(now())
+  expiresAt   DateTime?
+  companyId   String
+  postedBy    String
+
+  // Relations
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  poster      User         @relation("JobPoster", fields: [postedBy], references: [id], onDelete: Cascade)
+  applications Application[]
+  skills      JobSkill[]
+
+  @@map("jobs")
+}
+
+// Application model for job applications
+model Application {
+  id          String        @id @default(cuid())
+  status      ApplicationStatus @default(PENDING)
+  appliedAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  coverLetter String?
+  resume      String?
+  userId      String
+  jobId       String
+  companyId   String?
+
+  // Relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job         Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  company     Company?      @relation(fields: [companyId], references: [id])
+  messages    Message[]
+
+  @@map("applications")
+}
+
+// Message model for communication
+model Message {
+  id          String   @id @default(cuid())
+  content     String
+  isRead      Boolean  @default(false)
+  sentAt      DateTime @default(now())
+  senderId    String
+  receiverId  String
+  applicationId String?
+
+  // Relations
+  sender      User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// Skill model for user skills and job requirements
+model Skill {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  userSkills  UserSkill[]
+  jobSkills   JobSkill[]
+
+  @@map("skills")
+}
+
+// UserSkill model for user-skill relationships
+model UserSkill {
+  id        String   @id @default(cuid())
+  userId    String
+  skillId   String
+  proficiency Int    @default(50) // Percentage 0-100
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@map("user_skills")
+}
+
+// JobSkill model for job-skill requirements
+model JobSkill {
+  id        String   @id @default(cuid())
+  jobId     String
+  skillId   String
+  isRequired Boolean @default(true)
+  createdAt DateTime @default(now())
+
+  // Relations
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skillId])
+  @@map("job_skills")
+}
+
+// UserStatistics model for analytics
+model UserStatistics {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  profileViews          Int      @default(0)
+  applicationsSent      Int      @default(0)
+  applicationsAnswered  Int      @default(0)
+  interviewsScheduled   Int      @default(0)
+  interviewsCompleted   Int      @default(0)
+  offersReceived        Int      @default(0)
+  hiredCount            Int      @default(0)
+  unreadMessages        Int      @default(0)
+  lastUpdated           DateTime @default(now())
+
+  // Relations
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_statistics")
+}
+
+// ProfileView model for tracking profile views
+model ProfileView {
+  id        String   @id @default(cuid())
+  userId    String
+  viewedBy  String?
+  viewedAt  DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profile_views")
+}
+
+// Enums
+enum UserRole {
+  JOBSEEKER
+  EMPLOYER
+  ADMIN
+}
+
+enum JobType {
+  FULLTIME
+  PARTTIME
+  FREELANCE
+  INTERNSHIP
+  CONTRACT
+  REMOTE
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  ON_HOLD
+  INTERVIEW_SCHEDULED
+  INTERVIEWED
+  REJECTED
+  ACCEPTED
+  HIRED
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}

@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Sidebar from "../components/Sidebar";
+
 
 const filterTabs = ["All", "Pending", "On-Hold", "Candidate"];
 
@@ -107,16 +110,16 @@ export default function ApplicationsPage() {
           </div>
           <div className="flex items-center gap-6 ml-6">
             <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <span className="material-icons text-black">notifications</span>
-              <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">18</span>
+              <span className="material-icons text-black" key="notif-icon">notifications</span>
+              <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" key="notif-badge">18</span>
             </motion.button>
             <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <span className="material-icons text-black">email</span>
-              <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">52</span>
+              <span className="material-icons text-black" key="email-icon">email</span>
+              <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" key="email-badge">52</span>
             </motion.button>
             <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }}>
-              <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden" />
-              <div className="flex flex-col">
+              <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden" key="avatar" />
+              <div className="flex flex-col" key="user-info">
                 <span className="font-semibold text-sm text-black">Oda Dink</span>
                 <span className="text-xs text-gray-500">Super Admin</span>
               </div>
@@ -130,7 +133,7 @@ export default function ApplicationsPage() {
             <div className="text-xs text-gray-400">Based your preferences</div>
           </div>
           <div className="flex gap-2 mb-4">
-            {filterTabs.map((tab) => (
+            {filterTabs.map(tab => (
               <motion.button
                 key={tab}
                 whileHover={{ scale: 1.08 }}
@@ -153,8 +156,8 @@ export default function ApplicationsPage() {
                 whileTap={{ scale: 0.96 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-sm text-gray-700 bg-white hover:bg-[#e0f2fe] transition-colors"
               >
-                <span>Newest</span>
-                <span className="material-icons text-base">expand_more</span>
+                <span key="newest-label">Newest</span>
+                <span className="material-icons text-base" key="expand-icon">expand_more</span>
               </motion.button>
             </div>
             <div className="overflow-x-auto">
