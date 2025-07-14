@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('JOBSEEKER', 'EMPLOYER', 'ADMIN');
-
--- CreateEnum
 CREATE TYPE "JobType" AS ENUM ('FULLTIME', 'PARTTIME', 'FREELANCE', 'INTERNSHIP', 'CONTRACT', 'REMOTE');
 
 -- CreateEnum
@@ -26,10 +23,10 @@ CREATE TABLE "users" (
     "country" TEXT,
     "aboutMe" TEXT,
     "isAvailableForHire" BOOLEAN NOT NULL DEFAULT false,
-    "role" "UserRole" NOT NULL DEFAULT 'JOBSEEKER',
     "companyId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "activeRoleId" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -160,6 +157,22 @@ CREATE TABLE "profile_views" (
     CONSTRAINT "profile_views_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Role" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_UserRoles" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserRoles_AB_pkey" PRIMARY KEY ("A","B")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -177,6 +190,15 @@ CREATE UNIQUE INDEX "job_skills_jobId_skillId_key" ON "job_skills"("jobId", "ski
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_statistics_userId_key" ON "user_statistics"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
+
+-- CreateIndex
+CREATE INDEX "_UserRoles_B_index" ON "_UserRoles"("B");
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_activeRoleId_fkey" FOREIGN KEY ("activeRoleId") REFERENCES "Role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "companies"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -222,3 +244,9 @@ ALTER TABLE "user_statistics" ADD CONSTRAINT "user_statistics_userId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "profile_views" ADD CONSTRAINT "profile_views_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserRoles" ADD CONSTRAINT "_UserRoles_A_fkey" FOREIGN KEY ("A") REFERENCES "Role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserRoles" ADD CONSTRAINT "_UserRoles_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -2,6 +2,7 @@
 import React from "react";
 import Sidebar from "../../../components/Sidebar";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 // Placeholder job data (replace with dynamic fetch in the future)
 const job = {
@@ -85,7 +86,7 @@ export default function JobInfoPage() {
           <motion.div className="bg-white rounded-2xl shadow p-6 flex flex-col items-center md:items-stretch" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-gray-100 flex items-center justify-center">
               {/* Company image or placeholder */}
-              <img src={job.company.image} alt="Company" className="object-cover w-full h-full" />
+              <Image src={job.company.image} alt="Company" className="object-cover w-full h-full" width={400} height={300} />
             </div>
             <div className="flex flex-col items-center gap-2 mb-4">
               <div className="w-20 h-20 rounded-full bg-[#e0f2fe] flex items-center justify-center mb-2">
@@ -165,7 +166,7 @@ export default function JobInfoPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {job.gallery.map((img, idx) => (
                   <div key={idx} className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
-                    <img src={img} alt="Gallery" className="object-cover w-full h-full" />
+                    <Image src={img} alt="Gallery" className="object-cover w-full h-full" width={200} height={150} />
                   </div>
                 ))}
               </div>

@@ -1,22 +1,35 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { motion } from "framer-motion";
 import ProfileStrengthChart from "./components/ProfileStrengthChart";
 import VisitorGraph from "./components/VisitorGraph";
 import NetworkDonutChart from "./components/NetworkDonutChart";
 import JobTrendsChart from "./components/JobTrendsChart";
-
-const statCards = [
-  { label: "Profile Viewed", value: "456k", icon: "visibility", color: "#22c55e", sub: "+24%", subColor: "#22c55e", subText: "than last month" },
-  { label: "Unread Messages", value: "28", icon: "mail", color: "#6366f1", link: "/messages", linkText: "Go to Message" },
-  { label: "Application Sent", value: "651", icon: "work", color: "#0ea5e9" },
-  { label: "App. Answered", value: "24", icon: "reply", color: "#f59e42" },
-  { label: "Interviewed", value: "261", icon: "event", color: "#38bdf8" },
-  { label: "Hired", value: "69", icon: "call", color: "#7c3aed" },
-];
+import Navbar from "../components/Navbar";
+import Loading from "../components/Loading";
 
 export default function StatisticsPage() {
+  const [statCards, setStatCards] = useState<unknown[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      setLoading(true);
+      const res = await fetch("/api/statistics");
+      if (res.ok) {
+        const data = await res.json();
+        setStatCards(data.statCards);
+      }
+      setLoading(false);
+    }
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="flex min-h-screen bg-[#f0f9ff]">
       {/* Sidebar fixed */}
@@ -26,20 +39,22 @@ export default function StatisticsPage() {
       {/* Main content scrollable */}
       <main className="flex-1 ml-64 min-h-screen overflow-x-auto">
         {/* Top Bar */}
-        <header className="sticky top-0 z-10 flex items-center justify-between px-10 py-6 bg-white shadow-sm">
-          <div className="flex items-center gap-4">
-            <span className="material-icons text-2xl cursor-pointer">menu</span>
-            <span className="text-xl font-semibold text-black">Statistics</span>
-          </div>
-          <div className="flex-1 flex justify-center items-center gap-6">
-            <input
-              type="text"
-              placeholder="Search something here..."
-              className="w-full max-w-md px-5 py-2 rounded-full border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] text-black bg-white text-base transition-all duration-200"
-              style={{ minWidth: '260px' }}
-            />
-          </div>
-        </header>
+        <Navbar
+          title="Statistics"
+          profile={{ name: "Oda Dink", role: "Super Admin" }}
+          right={
+            <>
+              <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <span className="material-icons text-black">notifications</span>
+                <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">10</span>
+              </motion.button>
+              <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <span className="material-icons text-black">email</span>
+                <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">12</span>
+              </motion.button>
+            </>
+          }
+        />
         {/* Main Grid Layout */}
         <div className="px-10 pb-10 flex flex-col gap-6 min-w-[1200px] mt-6">
           {/* First Row: Profile Strength + Stat Cards (vertical stack) */}
@@ -67,17 +82,30 @@ export default function StatisticsPage() {
             <div className="col-span-7 grid grid-cols-3 gap-6 items-stretch">
               {[0, 1, 2].map((col) => (
                 <div key={col} className="flex flex-col gap-6 items-stretch">
-                  {statCards.slice(col * 2, col * 2 + 2).map((card, idx) => (
-                    <motion.div key={idx} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-start justify-between min-h-[120px] h-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + (col * 2 + idx) * 0.05 }}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="material-icons text-2xl" style={{ color: card.color }}>{card.icon}</span>
-                        <span className="text-2xl font-bold text-gray-900">{card.value}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 font-semibold">{card.label}</div>
-                      {card.sub && <div className="flex items-center gap-1 mt-1"><span className="text-xs font-semibold" style={{ color: card.subColor }}>{card.sub}</span><span className="text-xs text-gray-400">{card.subText}</span></div>}
-                      {card.link && <a href={card.link} className="text-xs text-[#0ea5e9] font-semibold mt-1 underline">{card.linkText}</a>}
-                    </motion.div>
-                  ))}
+                  {statCards.slice(col * 2, col * 2 + 2).map((c, idx) => {
+                    const card = c as {
+                      label: string;
+                      value: string | number;
+                      icon: string;
+                      color: string;
+                      sub?: string;
+                      subColor?: string;
+                      subText?: string;
+                      link?: string;
+                      linkText?: string;
+                    };
+                    return (
+                      <motion.div key={idx} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-start justify-between min-h-[120px] h-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + (col * 2 + idx) * 0.05 }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="material-icons text-2xl" style={{ color: card.color }}>{card.icon}</span>
+                          <span className="text-2xl font-bold text-gray-900">{card.value}</span>
+                        </div>
+                        <div className="text-xs text-gray-500 font-semibold">{card.label}</div>
+                        {card.sub && <div className="flex items-center gap-1 mt-1"><span className="text-xs font-semibold" style={{ color: card.subColor }}>{card.sub}</span><span className="text-xs text-gray-400">{card.subText}</span></div>}
+                        {card.link && <a href={card.link} className="text-xs text-[#0ea5e9] font-semibold mt-1 underline">{card.linkText}</a>}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               ))}
             </div>

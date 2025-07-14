@@ -1,6 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 
 const tabs = ["Profile", "Preferences", "General", "Admin"];
@@ -12,6 +14,31 @@ export default function SettingsPage() {
   const [pushNotif, setPushNotif] = useState(false);
   const [name, setName] = useState("Oda Dink");
   const [middleName, setMiddleName] = useState("");
+  const [roles, setRoles] = useState<string[]>(["freelancer", "client"]); // Placeholder, will fetch from backend
+  const [activeRole, setActiveRole] = useState<string>("freelancer"); // Placeholder, will fetch from backend
+  const [roleLoading, setRoleLoading] = useState(false);
+  const [roleAlert, setRoleAlert] = useState<string | null>(null);
+
+  // Fetch roles and activeRole from backend (mocked for now)
+  useEffect(() => {
+    // TODO: Replace with real API call
+    setRoles(["freelancer", "client", "admin", "superadmin"]);
+    setActiveRole("freelancer");
+  }, []);
+
+  const handleRoleSwitch = async () => {
+    setRoleLoading(true);
+    setRoleAlert(null);
+    try {
+      // TODO: Replace with real API call
+      await new Promise(res => setTimeout(res, 800));
+      setRoleAlert("Role switched successfully!");
+    } catch {
+      setRoleAlert("Failed to switch role.");
+    } finally {
+      setRoleLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#f0f9ff]">
@@ -19,12 +46,22 @@ export default function SettingsPage() {
         <Sidebar />
       </div>
       <main className="flex-1 ml-64 min-h-screen overflow-x-auto">
-        <header className="sticky top-0 z-10 flex items-center justify-between px-10 py-6 bg-white shadow-sm">
-          <div className="flex items-center gap-4">
-            <span className="material-icons text-2xl cursor-pointer">settings</span>
-            <span className="text-xl font-semibold text-black">Settings</span>
-          </div>
-        </header>
+        <Navbar
+          title="Settings"
+          profile={{ name: name, role: activeRole }}
+          right={
+            <>
+              <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <span className="material-icons text-black">notifications</span>
+                <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">10</span>
+              </motion.button>
+              <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <span className="material-icons text-black">email</span>
+                <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">12</span>
+              </motion.button>
+            </>
+          }
+        />
         <div className="px-0 py-10 flex flex-col gap-8 w-full mt-6">
           {/* Tabs */}
           <div className="flex gap-6 border-b border-gray-200 mb-6 px-10">
@@ -154,7 +191,7 @@ export default function SettingsPage() {
                 <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.3 }} className="w-full max-w-xs bg-white rounded-2xl shadow p-6 flex flex-col gap-6 self-start">
                   <div className="flex flex-col items-center gap-2">
                     <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center mb-2">
-                      <img src="/avatar1.png" alt="Oda Dink" className="w-full h-full object-cover" />
+                      <Image src="/avatar1.png" alt="Oda Dink" className="w-full h-full object-cover" width={80} height={80} />
                     </div>
                     <div className="font-bold text-lg text-gray-900">Oda Dink</div>
                     <div className="text-xs text-gray-500 mb-2">Programmer</div>
@@ -226,8 +263,43 @@ export default function SettingsPage() {
             )}
             {activeTab === "General" && (
               <motion.section key="general" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.2 }} className="bg-white rounded-2xl shadow p-8 flex flex-col gap-6">
-                <div className="text-lg font-bold text-gray-900 mb-2">General</div>
-                <div className="text-gray-500">General settings and information will appear here.</div>
+                <div className="text-lg font-bold text-gray-900 mb-2">Account</div>
+                <div className="text-gray-500 mb-4">General settings and information will appear here.</div>
+                {/* Role Switcher */}
+                <div className="mb-4">
+                  <div className="font-semibold text-gray-700 mb-2">Active Role</div>
+                  <div className="flex gap-4 flex-wrap">
+                    {roles.map(role => (
+                      <motion.label key={role} whileHover={{ scale: 1.08 }} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${activeRole === role ? 'bg-[#0ea5e9] text-white border-[#0ea5e9]' : 'bg-white text-[#0ea5e9] border-[#0ea5e9]/30'}`}>
+                        <input
+                          type="radio"
+                          name="activeRole"
+                          value={role}
+                          checked={activeRole === role}
+                          onChange={() => setActiveRole(role)}
+                          className="accent-[#0ea5e9]"
+                        />
+                        <span className="capitalize">{role}</span>
+                      </motion.label>
+                    ))}
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleRoleSwitch}
+                    disabled={roleLoading}
+                    className="mt-3 bg-[#0ea5e9] text-white px-6 py-2 rounded-full font-semibold shadow transition-colors text-base disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {roleLoading ? "Switching..." : "Switch Role"}
+                  </motion.button>
+                  <AnimatePresence>
+                    {roleAlert && (
+                      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-2 text-sm font-medium text-green-700 bg-green-100 rounded px-3 py-1">
+                        {roleAlert}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.section>
             )}
             {activeTab === "Admin" && (

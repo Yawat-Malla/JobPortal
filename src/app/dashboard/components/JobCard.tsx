@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 interface JobCardProps {
   company: string;
@@ -18,7 +19,12 @@ const typeColors = {
 };
 
 const JobCard: React.FC<JobCardProps> = ({ company, title, salary, description, type, location, icon = "work", color }) => (
-  <div className="bg-white rounded-2xl shadow p-5 flex flex-col min-w-[220px]">
+  <motion.div
+    className="bg-white rounded-2xl shadow p-5 flex flex-col min-w-[220px]"
+    whileHover={{ scale: 1.06, boxShadow: "0 8px 32px 0 rgba(14,165,233,0.18)" }}
+    whileTap={{ scale: 0.98 }}
+    transition={{ type: "spring", stiffness: 300, damping: 18 }}
+  >
     <div className="flex items-center gap-2 mb-2">
       <span className="material-icons text-lg" style={{ color: color || typeColors[type] }}>{icon}</span>
       <span className="text-xs text-gray-500 font-semibold">{company}</span>
@@ -30,7 +36,7 @@ const JobCard: React.FC<JobCardProps> = ({ company, title, salary, description, 
       <span className="px-2 py-1 rounded-full text-xs font-semibold" style={{ background: (color || typeColors[type]) + '22', color: color || typeColors[type] }}>{type}</span>
       <span className="text-xs text-gray-400 ml-auto">{location}</span>
     </div>
-  </div>
+  </motion.div>
 );
 
 export default JobCard; 

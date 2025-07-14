@@ -26,10 +26,13 @@ model User {
   country       String?
   aboutMe       String?
   isAvailableForHire Boolean @default(false)
-  role          UserRole  @default(JOBSEEKER)
   companyId     String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  // Role relations
+  roles         Role[]    @relation("UserRoles")
+  activeRoleId  String?
+  activeRole    Role?     @relation("ActiveRole", fields: [activeRoleId], references: [id])
 
   // Relations
   skills        UserSkill[]
@@ -212,13 +215,15 @@ model ProfileView {
   @@map("profile_views")
 }
 
-// Enums
-enum UserRole {
-  JOBSEEKER
-  EMPLOYER
-  ADMIN
+// Role model for user roles
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  users       User[]   @relation("UserRoles")
+  activeUsers User[]   @relation("ActiveRole")
 }
 
+// Enums
 enum JobType {
   FULLTIME
   PARTTIME
@@ -245,4 +250,17 @@ enum CompanySize {
   MEDIUM
   LARGE
   ENTERPRISE
+}
+
+model CasbinRule {
+  id    Int     @id @default(autoincrement())
+  ptype String
+  v0    String?
+  v1    String?
+  v2    String?
+  v3    String?
+  v4    String?
+  v5    String?
+
+  @@map("casbin_rule")
 }

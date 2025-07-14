@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const tabs = ["All", "Unread", "Important"];
 const teamMessages = [
@@ -94,37 +96,22 @@ export default function MessagesPage() {
       <Sidebar />
       <main className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <header className="flex items-center justify-between px-10 py-6 bg-white shadow-sm">
-          <div className="flex items-center gap-4">
-            <span className="material-icons text-2xl cursor-pointer">menu</span>
-            <span className="text-xl font-semibold text-black">Messages</span>
-          </div>
-          <div className="flex-1 flex justify-center items-center gap-6">
-            <input
-              type="text"
-              placeholder="Search something here..."
-              className="w-full max-w-md px-5 py-2 rounded-full border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] text-black bg-white text-base transition-all duration-200"
-              style={{ minWidth: '260px' }}
-            />
-          </div>
-          <div className="flex items-center gap-6 ml-6">
-            <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <span className="material-icons text-black">notifications</span>
-              <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">18</span>
-            </motion.button>
-            <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <span className="material-icons text-black">email</span>
-              <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">52</span>
-            </motion.button>
-            <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }}>
-              <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden" />
-              <div className="flex flex-col">
-                <span className="font-semibold text-sm text-black">Oda Dink</span>
-                <span className="text-xs text-gray-500">Super Admin</span>
-              </div>
-            </motion.div>
-          </div>
-        </header>
+        <Navbar
+          title="Messages"
+          profile={{ name: "Oda Dink", role: "Super Admin" }}
+          right={
+            <>
+              <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <span className="material-icons text-black">notifications</span>
+                <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">18</span>
+              </motion.button>
+              <motion.button className="relative" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <span className="material-icons text-black">email</span>
+                <span className="absolute -top-1 -right-1 bg-[#0ea5e9] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">52</span>
+              </motion.button>
+            </>
+          }
+        />
         {/* Main Messaging Area */}
         <section className="flex-1 flex flex-row gap-6 px-10 py-8">
           {/* Left: Message List */}
@@ -152,7 +139,7 @@ export default function MessagesPage() {
                   <motion.div key={idx} whileHover={{ scale: 1.01, backgroundColor: '#f0f9ff' }} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors">
                     <div className="flex -space-x-2">
                       {msg.avatars.map((a, i) => (
-                        <img key={i} src={a} alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" />
+                        <Image key={i} src={a} alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" width={28} height={28} />
                       ))}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -168,7 +155,7 @@ export default function MessagesPage() {
               <div className="flex flex-col gap-2">
                 {recentMessages.map((msg, idx) => (
                   <motion.div key={idx} whileHover={{ scale: 1.01, backgroundColor: '#f0f9ff' }} className="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors">
-                    <img src={msg.avatar} alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" />
+                    <Image src={msg.avatar} alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" width={28} height={28} />
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm text-gray-900 truncate">{msg.name}</div>
                       <div className="text-xs text-gray-500 truncate">{msg.message}</div>
@@ -190,9 +177,9 @@ export default function MessagesPage() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
-                  <img src="/avatar1.png" alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" />
-                  <img src="/avatar2.png" alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" />
-                  <img src="/avatar3.png" alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" />
+                  <Image src="/avatar1.png" alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" width={28} height={28} />
+                  <Image src="/avatar2.png" alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" width={28} height={28} />
+                  <Image src="/avatar3.png" alt="avatar" className="w-7 h-7 rounded-full border-2 border-white" width={28} height={28} />
                   <span className="w-7 h-7 rounded-full bg-[#0ea5e9] text-white flex items-center justify-center font-semibold text-xs border-2 border-white">5+</span>
                 </div>
                 <span className="material-icons text-gray-400 cursor-pointer">star_border</span>
@@ -210,7 +197,7 @@ export default function MessagesPage() {
                   className={`flex ${msg.self ? 'justify-end' : 'justify-start'} w-full`}
                 >
                   <div className={`flex items-end gap-2 max-w-[70%] ${msg.self ? 'flex-row-reverse' : ''}`}>
-                    <img src={msg.avatar} alt="avatar" className="w-8 h-8 rounded-full border-2 border-white" />
+                    <Image src={msg.avatar} alt="avatar" className="w-8 h-8 rounded-full border-2 border-white" width={32} height={32} />
                     <div>
                       <div className={`rounded-2xl px-4 py-2 mb-1 ${msg.self ? 'bg-[#0ea5e9] text-white' : 'bg-gray-100 text-gray-900'} text-sm`}>{msg.text}</div>
                       <div className="text-xs text-gray-400 mb-2">{msg.time}</div>
@@ -221,7 +208,7 @@ export default function MessagesPage() {
             </div>
             {/* Chat Input */}
             <form className="flex items-center gap-2 border-t border-gray-100 pt-4 mt-2" onSubmit={e => { e.preventDefault(); setInput(""); }}>
-              <img src="/avatar9.png" alt="avatar" className="w-9 h-9 rounded-full border-2 border-white" />
+              <Image src="/avatar9.png" alt="avatar" className="w-9 h-9 rounded-full border-2 border-white" width={36} height={36} />
               <input
                 type="text"
                 value={input}

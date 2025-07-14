@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface Skill {
   label: string;
@@ -22,7 +23,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ avatarUrl, name, role, skills
   <div className="bg-white rounded-2xl shadow p-6 flex flex-col items-center w-full">
     <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden mb-3 flex items-center justify-center">
       {avatarUrl ? (
-        <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+        <Image src={avatarUrl} alt={name} className="w-full h-full object-cover" width={80} height={80} />
       ) : (
         <span className="material-icons text-5xl text-gray-400">person</span>
       )}
